@@ -1,0 +1,27 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"EngineVersion": "5.8.0",
+	"FriendlyName": "StreamGuard - Level Streaming Diagnostics And Preload Budget",
+	"Description": "Open worlds hitch when something arrives from disk. Unreal Insights and stat levels will tell you afterwards, in another program, from a trace you had to remember to record - and the hitch you are chasing usually happens on one particular route through the map, in the packaged build, with your hands on the controller. StreamGuard is that moment instead. It draws a board inside the running game: every streaming source the world has - a sublevel or a World Partition runtime cell, they are the same object underneath - with its state, how many milliseconds it spent loading, how many it spent being added to the world, the frame number it finished in, and how far the player was from it. Under the board is a timeline of the last ten seconds of frame times where every frame over the hitch threshold is marked red, and next to the red mark stands the list of sources that finished in exactly that frame. That pairing is the entire point: it is the thing people otherwise assemble by hand from two logs with a text editor and a guess. The completion frame is not inferred from a polling loop - StreamGuard binds the engine's own OnLevelLoaded and OnLevelShown delegates through a small watcher object per level, so the frame number is stamped at the instant the engine finished, not at the next tick. The second half is the preload budget. At most N loads in flight and at most M milliseconds of activation work per frame; whatever does not fit waits a frame instead of being dropped, and the order is decided by where the player is going rather than only where the player is - a cell ahead of the travel direction outranks a cell the same distance to the side. One hitch becomes ten frames nobody sees. The planner is a static function that takes an array and a budget and returns which requests start now and which wait, with no world and no subsystem behind it, so it is unit-tested rather than hoped about, and it can never starve a request: the first item through always goes, however expensive, and anything held too long is promoted. StreamGuard has a ceiling on itself - at most 256 tracked sources, everything past that folded into a single row - because a diagnostic that becomes the hitch is worse than no diagnostic. Freeze the board with a key, write it to CSV with another. Console commands StreamGuard.Show, StreamGuard.Freeze, StreamGuard.Export, StreamGuard.Budget and StreamGuard.Throttle, the last being the before-and-after switch you show people. What this is not: StreamGuard does not replace World Partition, does not stream anything the engine was not already going to stream, and does not load content of its own. It measures, it attributes, and it paces. No UMG in the product - the board is UCanvas drawn from AHUD so it survives a packaged build with no widget tree - no editor module, no third-party code. Built and verified on Win64.",
+	"Category": "Engine Tools",
+	"CreatedBy": "Silvan Teufel",
+	"CreatedByURL": "https://silvan.teufel-engineering.com",
+	"DocsURL": "https://wiki.teufel-engineering.com/en/StreamGuard/documentation",
+	"SupportURL": "mailto:teufelsilvan@gmail.com",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "StreamGuard",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		}
+	]
+}
